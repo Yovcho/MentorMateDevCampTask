@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace MentorMateDevCampTask.Models
 {
@@ -50,6 +51,58 @@ namespace MentorMateDevCampTask.Models
             this.firstLayer = new int[this.Row, this.Column];
             this.secondLayer = new int[this.Row, this.Column];
 
+        }
+        public void AddBrickLines()
+        {
+            for (int row = 0; row < this.row; row++)
+            {
+                var inputRow = Console.ReadLine().Trim().Split(' ').Select(int.Parse).ToArray();
+                for (int column = 0; column < this.column; column++)
+                {
+                    firstLayer[row, column] = inputRow[column];
+                }
+            }
+        }
+
+        public void BuildSecondLayer()
+        {
+            int brickNumberCounter = 1;
+            for (int i = 0; i < this.Row; i++)
+            {
+                for (int j = 0; j < this.Column; j++)
+                {
+                    if (secondLayer[i, j] == 0 && j == this.Column - 1)
+                    {
+                        secondLayer[i, j] = secondLayer[i + 1, j] = brickNumberCounter; ;
+                        brickNumberCounter++;
+                    }
+
+                    else if (secondLayer[i, j] == 0 && j < this.Column - 1)
+                    {
+                        if (firstLayer[i, j] == firstLayer[i, j + 1])
+                        {
+                            secondLayer[i, j] = secondLayer[i + 1, j] = brickNumberCounter;
+                            brickNumberCounter++;
+                        }
+                        else
+                        {
+                            secondLayer[i, j] = secondLayer[i, j + 1] = brickNumberCounter;
+                            brickNumberCounter++;
+                        }
+                    }
+                }
+            }
+        }
+        public void PrintLayer()
+        {
+            for (int row = 0; row < this.row; row++)
+            {
+                for (int column = 0; column < this.column; column++)
+                {
+                    Console.Write(string.Format("| {0} ", secondLayer[row, column]));
+                }
+                Console.Write(Environment.NewLine);
+            }
         }
     }
 }

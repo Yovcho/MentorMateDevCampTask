@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MentorMateDevCampTask.Models
@@ -62,8 +63,14 @@ namespace MentorMateDevCampTask.Models
                     firstLayer[row, column] = inputRow[column];
                 }
             }
+            this.ValidateLayer();
         }
-
+        private void ValidateLayer()
+        {
+            this.IsBrickSpanningThreeRows();
+            this.IsBrickSpanningThreeColumns();
+            this.BrickNumbersValidation();
+        }
         public void BuildSecondLayer()
         {
             int brickNumberCounter = 1;
@@ -99,9 +106,59 @@ namespace MentorMateDevCampTask.Models
             {
                 for (int column = 0; column < this.column; column++)
                 {
-                    Console.Write(string.Format("| {0} ", secondLayer[row, column]));
+                    Console.Write(string.Format("{0} ", secondLayer[row, column]));
                 }
                 Console.Write(Environment.NewLine);
+            }
+        }
+        private void IsBrickSpanningThreeRows()
+        {
+            for (int row = 0; row < firstLayer.GetLength(0) - 2; row++)
+            {
+                for (int col = 0; col < firstLayer.GetLength(1); col++)
+                {
+                    if (firstLayer[row, col] == firstLayer[row + 1, col] &&
+                        firstLayer[row + 1, col] == firstLayer[row + 2, col])
+                    {
+                        throw new Exception("There is a brick on 3 rows!");
+                    }
+                }
+            }
+        }
+        private void IsBrickSpanningThreeColumns()
+        {
+            for (int row = 0; row < firstLayer.GetLength(0); row++)
+            {
+                for (int col = 0; col < firstLayer.GetLength(1) - 2; col++)
+                {
+                    if (firstLayer[row, col] == firstLayer[row, col + 1] &&
+                        firstLayer[row, col + 1] == firstLayer[row, col + 2])
+                    {
+                        throw new Exception("There is a brick on 3 columns!");
+                    }
+                }
+            }
+        }
+        private void BrickNumbersValidation()
+        {
+            var duplicateNumberDictionary = new Dictionary<int, int>();
+            for (int row = 0; row < firstLayer.GetLength(0); row++)
+            {
+                for (int column = 0; column < firstLayer.GetLength(1); column++)
+                {
+                    if (!duplicateNumberDictionary.ContainsKey(firstLayer[row, column]))
+                    {
+                        duplicateNumberDictionary.Add(firstLayer[row, column], 0);
+                    }
+
+                    duplicateNumberDictionary[firstLayer[row, column]]++;
+
+                    if (duplicateNumberDictionary[firstLayer[row, column]] > 2)
+                    {
+                        throw new Exception($"Brick with number {duplicateNumberDictionary.FirstOrDefault(x => x.Key == firstLayer[row,column]).Key} is duplicate!");
+                    }
+
+                }
             }
         }
     }

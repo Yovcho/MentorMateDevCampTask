@@ -1,6 +1,6 @@
 ﻿using MentorMateDevCampTask.Models;
+using MentorMateDevCampTask.Utilities;
 using System;
-using System.Linq;
 
 namespace MentorMateDevCampTask.Logic
 {
@@ -9,7 +9,7 @@ namespace MentorMateDevCampTask.Logic
 
         public void Start()
         {
-            var inputArea = Console.ReadLine().Trim().Split(' ').Select(int.Parse).ToArray();
+            var inputArea = Helpers.ReadLineAndConvertToArray();
 
             if (inputArea[0] == 2 && inputArea[1] == 2)
             {

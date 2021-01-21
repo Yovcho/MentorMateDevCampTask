@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MentorMateDevCampTask.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,14 +13,14 @@ namespace MentorMateDevCampTask.Models
             private set
             {
                 row = value;
-
+                // throw exception if validation is wrong
                 if (row % 2 == 1)
                 {
                     throw new ArgumentException("Rows need to be an even number!");
                 }
-                if (row > 100)
+                if (row > 100 || row <= 0)
                 {
-                    throw new ArgumentException("Rows should not exceed 100!");
+                    throw new ArgumentException("Rows should not exceed 100 or be less than 0!");
                 }
             }
 
@@ -30,17 +31,18 @@ namespace MentorMateDevCampTask.Models
             private set
             {
                 column = value;
-
+                // throw exception if validation is wrong
                 if (column % 2 == 1)
                 {
                     throw new ArgumentException("Colums need to be an even number!");
                 }
-                if (column > 100)
+                if (column > 100 || column <= 0)
                 {
-                    throw new ArgumentException("Columns should not exceed 100!");
+                    throw new ArgumentException("Columns should not exceed 100 or be less than 0!");
                 }
             }
         }
+        //private fields that we will use
         private int row;
         private int column;
         private int[,] firstLayer;
@@ -53,11 +55,12 @@ namespace MentorMateDevCampTask.Models
             this.secondLayer = new int[this.Row, this.Column];
 
         }
+        // Method used for adding the brick lines to first layer
         public void AddBrickLines()
         {
             for (int row = 0; row < this.row; row++)
             {
-                var inputRow = Console.ReadLine().Trim().Split(' ').Select(int.Parse).ToArray();
+                var inputRow = Helpers.ReadLineAndConvertToArray();
                 for (int column = 0; column < this.column; column++)
                 {
                     firstLayer[row, column] = inputRow[column];
@@ -65,34 +68,41 @@ namespace MentorMateDevCampTask.Models
             }
             this.ValidateLayer();
         }
+        // All brick validations method
         private void ValidateLayer()
         {
             this.IsBrickSpanningThreeRows();
             this.IsBrickSpanningThreeColumns();
             this.BrickNumbersValidation();
         }
+        // Algorithm for building the second layer
         public void BuildSecondLayer()
         {
+            // Number of current brick 
             int brickNumberCounter = 1;
-            for (int i = 0; i < this.Row; i++)
+            for (int i = 0; i < this.row; i++)
             {
-                for (int j = 0; j < this.Column; j++)
+                for (int j = 0; j < this.column; j++)
                 {
-                    if (secondLayer[i, j] == 0 && j == this.Column - 1)
+                    //Check if it is the last column and is it free, if it is place a vertical brick
+                    if (secondLayer[i, j] == 0 && j == this.column - 1)
                     {
                         secondLayer[i, j] = secondLayer[i + 1, j] = brickNumberCounter; ;
                         brickNumberCounter++;
                     }
-
-                    else if (secondLayer[i, j] == 0 && j < this.Column - 1)
+                    //check if position on secondLayer is free 
+                    else if (secondLayer[i, j] == 0 && j < this.column - 1)
                     {
+                        //check if brick on firstLayer is horizontal
                         if (firstLayer[i, j] == firstLayer[i, j + 1])
                         {
+                            //if it is place a vertical brick on secondLayer
                             secondLayer[i, j] = secondLayer[i + 1, j] = brickNumberCounter;
                             brickNumberCounter++;
                         }
                         else
                         {
+                            //Otherwise place the brick horizontally
                             secondLayer[i, j] = secondLayer[i, j + 1] = brickNumberCounter;
                             brickNumberCounter++;
                         }
@@ -100,6 +110,7 @@ namespace MentorMateDevCampTask.Models
                 }
             }
         }
+        // Method for printing second layer
         public void PrintLayer()
         {
             for (int row = 0; row < this.row; row++)
@@ -111,6 +122,7 @@ namespace MentorMateDevCampTask.Models
                 Console.Write(Environment.NewLine);
             }
         }
+        // Method used for checking if brick is spanning three rows
         private void IsBrickSpanningThreeRows()
         {
             for (int row = 0; row < firstLayer.GetLength(0) - 2; row++)
@@ -125,6 +137,7 @@ namespace MentorMateDevCampTask.Models
                 }
             }
         }
+        // Method used for checking if brick is spanning three columns
         private void IsBrickSpanningThreeColumns()
         {
             for (int row = 0; row < firstLayer.GetLength(0); row++)
@@ -139,6 +152,7 @@ namespace MentorMateDevCampTask.Models
                 }
             }
         }
+        // Method to check if a brick number is duplicate somewhere in the first layer
         private void BrickNumbersValidation()
         {
             var duplicateNumberDictionary = new Dictionary<int, int>();
